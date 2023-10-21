@@ -14,6 +14,6 @@ import org.junit.platform.commons.util.StringUtils;
 public class NameValidator {
 
     public static boolean isCorrectName(String line) {
-        return !StringUtils.isBlank(line) && line.matches("^[a-zA-ZäÄåÅöÖ\\s]+$");
+        return !StringUtils.isBlank(line) && line.matches(RegexpPatterns.NAME_PATTERN);
     }
 }

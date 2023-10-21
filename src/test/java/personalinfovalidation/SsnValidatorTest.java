@@ -18,11 +18,10 @@ class SsnValidatorTest {
         assertEquals(expected, SsnValidator.isValidSsn(input, Optional.empty()));
     }
 
-
     @ParameterizedTest
     @MethodSource("provideSsnWhenInterimNumbersAreAllowed")
     void isValidSsnWhenInterimNumbersAreAllowed(String input, boolean expected) {
-        Optional<Rules> rules = Optional.of(new Rules(true, true));
+        Optional<Rules> rules = Optional.of(new Rules(true));
         assertEquals(expected, SsnValidator.isValidSsn(input, rules));
     }
 

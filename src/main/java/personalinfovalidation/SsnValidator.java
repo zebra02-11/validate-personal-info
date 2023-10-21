@@ -1,5 +1,7 @@
 package personalinfovalidation;
 
+import org.junit.platform.commons.util.StringUtils;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -19,30 +21,27 @@ import java.util.regex.Pattern;
  */
 
 public class SsnValidator {
-    private static final Pattern regexPattern;
-    private static final Pattern interimPatternTest;
-    private static final String interimTestStr = "(?![-+])\\D";
+    private static final Pattern regexPattern = Pattern.compile(RegexpPatterns.SSN_PATTERN);
 
-    static {
-        regexPattern = Pattern.compile("^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-+]?)?((?!000)\\d{3}|[TRSUWXJKLMN]\\d{2})(\\d?)$");
-        interimPatternTest = Pattern.compile(interimTestStr);
-    }
+    private static final Pattern interimPatternTest = Pattern.compile(RegexpPatterns.INTERIM_PATTERN);
 
-    public static boolean isValidSsn(String line, Optional<Rules> optionalRules) {
+    /**
+     * The method should be called to check is id number is valid.
+     * Currently, we use default settings/rules when interim numbers are not available
+     *
+     * @param input         - ssn we want to check
+     * @param optionalRules - default for now, a param can be used to set interim numbers property to true
+     */
+    public static boolean isValidSsn(String input, Optional<Rules> optionalRules) {
         try {
-            //For now, I am going to use default rules
             Rules rules = optionalRules.isEmpty() ? Rules.DEFAULT : optionalRules.get();
-            validateSsn(line, rules);
+            validateSsn(input, rules);
             return true;
         } catch (SsnException e) {
             return false;
         }
     }
 
-
-    /**
-     * This method is going to be used when some specific rules are set.
-     */
     private static void validateSsn(String input, Rules rules) throws SsnException {
         checkSsnLength(input);
 
@@ -55,37 +54,32 @@ public class SsnValidator {
             throw new SsnException(input + " contains non-integer characters and options are set to not allow interim numbers");
         }
 
-        Ssn personalSecurityNumber = getSsn(matches, rules);
+        Ssn personalSecurityNumber = getSsn(matches);
 
         checkDate(personalSecurityNumber);
 
         String nums = matches.group(6);
         if (rules.allowInterimNumbers) {
-            nums = nums.replaceFirst(interimTestStr, "1");
+            nums = nums.replaceFirst(RegexpPatterns.INTERIM_PATTERN, "1");
         }
         String personalNumber = personalSecurityNumber.getYear() + personalSecurityNumber.getMonth() + personalSecurityNumber.getDay() + nums;
         checkControlNumber(personalNumber, Integer.parseInt(personalSecurityNumber.getControlNumber()));
     }
 
-    public static Ssn getSsn(Matcher matches, Rules rules) throws SsnException {
+    private static Ssn getSsn(Matcher matches) {
         String century;
         String decade = matches.group(2);
-        if (matches.group(1) != null && !matches.group(1).isEmpty()) {
+        if (!StringUtils.isBlank(matches.group(1))) {
             century = matches.group(1);
         } else {
             int born = LocalDate.now().getYear() - Integer.parseInt(decade);
-            if (!matches.group(5).isEmpty() && matches.group(5).equals("+")) {
+            if (!StringUtils.isBlank(matches.group(5)) && matches.group(5).equals("+")) {
                 born -= 100;
             }
             century = Integer.toString(born).substring(0, 2);
         }
 
-        int day = Integer.parseInt(matches.group(4));
-        if (rules.allowCoordinationNumber) {
-            day = 1 + (day - 1) % 60;
-        } else if (day > 60) {
-            throw new SsnException("Invalid personal identity number.");
-        }
+        int day = 1 + (Integer.parseInt(matches.group(4)) - 1) % 60;
 
         return new Ssn(day,
                 century,
@@ -108,7 +102,6 @@ public class SsnValidator {
         }
     }
 
-
     private static void checkSsnLength(String ssn) throws SsnException {
         if (ssn == null) {
             throw new SsnException("Failed to parse personal identity number. Invalid input.");
@@ -126,7 +119,6 @@ public class SsnValidator {
      * to make sure that it is a valid number.
      */
     private static void checkControlNumber(String personalNumber, Integer controlNumber) throws SsnException {
-
         // Get the sum of all the digits, however we need to replace the value
         // of the first digit, and every other digit, with the same digit
         // multiplied by 2. If this multiplication yields a number greater

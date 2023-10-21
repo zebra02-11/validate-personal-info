@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author Daria Kolesnik
  */
-public class Ssn  {
+public class Ssn {
     private final int realDay;
     private final String fullYear;
     private final String century;
@@ -58,7 +58,6 @@ public class Ssn  {
     /**
      * Create a new Personnummber object from a string.
      * In case options is not passed, they will default to accept any personal and coordination numbers.
-     *
      */
     public Ssn(int realDay,
                String century,
@@ -112,6 +111,15 @@ public class Ssn  {
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Ssn{" +
+                "realDay=" + realDay +
+                ", fullYear='" + fullYear + '\'' +
+                ", century='" + century + '\'' +
+                ", year='" + year + '\'' +
+                ", month='" + month + '\'' +
+                ", day='" + day + '\'' +
+                ", numbers='" + numbers + '\'' +
+                ", controlNumber='" + controlNumber + '\'' +
+                '}';
     }
 }

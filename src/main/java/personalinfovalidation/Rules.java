@@ -6,15 +6,11 @@ public final class Rules {
 
     final boolean allowInterimNumbers;
 
-    final boolean allowCoordinationNumber;
-
     public Rules() {
         this.allowInterimNumbers = false;
-        this.allowCoordinationNumber = true;
     }
 
-    public Rules(boolean allowCoordinationNumber, boolean allowInterimNumbers) {
-        this.allowCoordinationNumber = allowCoordinationNumber;
+    public Rules(boolean allowInterimNumbers) {
         this.allowInterimNumbers = allowInterimNumbers;
     }
 }
