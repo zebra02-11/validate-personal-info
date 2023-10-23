@@ -1,7 +1,5 @@
 package personalinfovalidation;
 
-import org.junit.platform.commons.util.StringUtils;
-
 /**
  * Class used to validate personal name.
  * <p>
@@ -11,9 +9,9 @@ import org.junit.platform.commons.util.StringUtils;
  *
  * @author Daria Kolesnik
  */
-public class NameValidator {
+public class NameValidator implements Validator {
 
     public static boolean isCorrectName(String line) {
-        return !StringUtils.isBlank(line) && line.matches(RegexpPatterns.NAME_PATTERN);
+        return Validator.validateByContext(line, RegexpPatterns.NAME_PATTERN);
     }
 }

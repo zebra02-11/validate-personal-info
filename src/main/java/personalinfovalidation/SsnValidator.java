@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * @author Daria Kolesnik
  */
 
-public class SsnValidator {
+public class SsnValidator implements Validator {
     private static final Pattern regexPattern = Pattern.compile(RegexpPatterns.SSN_PATTERN);
 
     private static final Pattern interimPatternTest = Pattern.compile(RegexpPatterns.INTERIM_PATTERN);
@@ -44,6 +44,9 @@ public class SsnValidator {
 
     private static void validateSsn(String input, Rules rules) throws SsnException {
         checkSsnLength(input);
+        if (!Validator.validateByContext(input, regexPattern.pattern())) {
+            throw new SsnException("Failed to parse personal identity number. Invalid input.");
+        }
 
         Matcher matches = regexPattern.matcher(input);
         if (!matches.find()) {
@@ -79,7 +82,7 @@ public class SsnValidator {
             century = Integer.toString(born).substring(0, 2);
         }
 
-        int day = 1 + (Integer.parseInt(matches.group(4)) - 1) % 60;
+        int day = Integer.parseInt(matches.group(4));
 
         return new Ssn(day,
                 century,

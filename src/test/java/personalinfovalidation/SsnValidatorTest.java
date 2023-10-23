@@ -33,9 +33,9 @@ class SsnValidatorTest {
                 Arguments.of("201204129991", true),
                 Arguments.of("1204129991", true),
                 Arguments.of("120412-9991", true),
-                Arguments.of("19850864-9962", true),
+                Arguments.of("19850864-9962", false),
                 Arguments.of("111111-0000", false),
-                //older then 100
+//                older then 100
                 Arguments.of("185204269996", true),
                 Arguments.of("18520426+9996", true),
                 Arguments.of("520426+9996", true),

@@ -32,7 +32,8 @@ class NameValidatorTest {
                 Arguments.of("askjdhjhd87874", false),
                 Arguments.of("sdfjksn-sjbdf", false),
                 Arguments.of("", false),
-                Arguments.of(null, false)
+                Arguments.of(null, false),
+                Arguments.of(" ", false)
         );
     }
 }
